@@ -36,7 +36,7 @@
             <td style="width: 40%;">
                 <div class="titulo">@yield('titulo')</div>
                 <div style="text-align: right;">
-                    Ejercicio N° {{ $ejercicio->numero }} · Período {{ $desde->format('d/m/Y') }} al {{ $hasta->format('d/m/Y') }}
+                    @if(! empty($ejercicio))Ejercicio N° {{ $ejercicio->numero }} · @endif Período {{ $desde->format('d/m/Y') }} al {{ $hasta->format('d/m/Y') }}
                 </div>
                 @hasSection('subtitulo')<div style="text-align: right;" class="muted">@yield('subtitulo')</div>@endif
             </td>

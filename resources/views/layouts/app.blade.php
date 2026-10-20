@@ -78,8 +78,8 @@
 
             <li class="nav-section">Impuestos</li>
             <li>
-                <a href="#" class="nav-link disabled"><i class="bi bi-receipt me-2"></i>Libros IVA
-                    @unless($empresaActiva->tieneModulo('iva'))<i class="bi bi-lock-fill ms-1 small"></i>@endunless
+                <a href="{{ route('iva.libro', 'venta') }}" class="nav-link {{ request()->routeIs('iva.*') ? 'active' : '' }}"><i class="bi bi-receipt me-2"></i>Libros IVA
+                    @unless($conIva)<i class="bi bi-lock-fill ms-1 small"></i>@endunless
                 </a>
             </li>
             <li>

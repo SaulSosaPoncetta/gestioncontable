@@ -100,6 +100,14 @@ class ComprobanteRequest extends FormRequest
                     $v->errors()->add('fecha', 'No se puede mover el comprobante a otro ejercicio. Anúlelo y cárguelo nuevamente.');
                 }
 
+                // Período IVA cerrado (el nuevo y, al editar, el original)
+                if (\App\Models\IvaPosicion::estaCerrado($this->periodo_iva)) {
+                    $v->errors()->add('periodo_iva', 'El período IVA ' . $this->periodo_iva . ' ya está cerrado. Reábralo desde la posición de IVA o use otro período.');
+                }
+                if ($actual && $actual->periodo_iva !== $this->periodo_iva && \App\Models\IvaPosicion::estaCerrado($actual->periodo_iva)) {
+                    $v->errors()->add('periodo_iva', 'El comprobante pertenece a un período IVA cerrado.');
+                }
+
                 // IVA
                 $discrimina = Afip::discriminaIva($tipo, $circuito);
                 if (! $discrimina && ! empty($this->alicuotas)) {

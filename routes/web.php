@@ -13,6 +13,7 @@ use App\Http\Controllers\EjercicioController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\EstadoController;
 use App\Http\Controllers\LibroController;
+use App\Http\Controllers\LibroIvaController;
 use App\Http\Controllers\SuscripcionController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
@@ -94,6 +95,14 @@ Route::middleware(['auth', 'empresa', 'suscripcion'])->group(function () {
             Route::put('/{comprobante}', [ComprobanteController::class, 'update'])->name('update');
             Route::post('/{comprobante}/anular', [ComprobanteController::class, 'anular'])->name('anular');
         });
+
+    // Libros IVA y posición mensual (módulo IVA)
+    Route::middleware('modulo:iva')->prefix('iva')->name('iva.')->group(function () {
+        Route::get('/libro/{circuito}', [LibroIvaController::class, 'libro'])->whereIn('circuito', ['venta', 'compra'])->name('libro');
+        Route::get('/posicion', [LibroIvaController::class, 'posicion'])->name('posicion');
+        Route::post('/posicion/cerrar', [LibroIvaController::class, 'cerrar'])->name('cerrar');
+        Route::post('/posicion/{posicion}/reabrir', [LibroIvaController::class, 'reabrir'])->name('reabrir');
+    });
 
     // Configuración de cuentas automáticas
     Route::get('/configuracion/cuentas', [ConfigContableController::class, 'edit'])->name('config.cuentas');

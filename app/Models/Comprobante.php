@@ -87,8 +87,16 @@ class Comprobante extends Model
         return Afip::abreviatura($this->tipo_comprobante) . ' ' . $this->numero_completo;
     }
 
+    public function periodoCerrado(): bool
+    {
+        return IvaPosicion::estaCerrado($this->periodo_iva);
+    }
+
+    /** Editable si no está anulado, su período IVA está abierto y su asiento admite cambios. */
     public function esEditable(): bool
     {
-        return ! $this->estaAnulado() && (! $this->asiento || $this->asiento->esEditable());
+        return ! $this->estaAnulado()
+            && ! $this->periodoCerrado()
+            && (! $this->asiento || $this->asiento->esEditable());
     }
 }

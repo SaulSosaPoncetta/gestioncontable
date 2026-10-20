@@ -32,6 +32,10 @@ class CuentaConfig extends Model
         'perc_iva_sufridas'       => ['Compras', 'Percepciones de IVA sufridas',                        '1.1.04.004'],
         'perc_iibb_sufridas'      => ['Compras', 'Percepciones de IIBB sufridas',                       '1.1.04.008'],
         'otros_tributos_compras'  => ['Compras', 'Otros tributos (impuestos internos, tasas)',          '5.3.01.012'],
+        'iva_saldo_tecnico'       => ['Liquidación de IVA', 'IVA saldo a favor técnico',               '1.1.04.002'],
+        'iva_saldo_libre'         => ['Liquidación de IVA', 'IVA saldo a favor de libre disponibilidad', '1.1.04.003'],
+        'ret_iva_sufridas'        => ['Liquidación de IVA', 'Retenciones de IVA sufridas',             '1.1.04.005'],
+        'iva_a_pagar'             => ['Liquidación de IVA', 'IVA a pagar',                             '2.1.04.002'],
     ];
 
     public function cuenta(): BelongsTo
