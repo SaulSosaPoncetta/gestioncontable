@@ -58,6 +58,7 @@ class ComprobanteRequest extends FormRequest
             'cae'                  => ['nullable', 'digits:14'],
             'vto_cae'              => ['nullable', 'date'],
             'cuenta_imputacion_id' => ['required', Rule::exists('cuentas', 'id')->where('empresa_id', $empresa->id)->where('imputable', true)->where('activa', true)],
+            'operacion_iva'        => ['required', 'integer', $circuito === 'venta' ? 'between:1,2' : 'between:1,4'],
             'no_gravado'           => ['numeric', 'min:0'],
             'exento'               => ['numeric', 'min:0'],
             'percepcion_iva'       => ['numeric', 'min:0'],

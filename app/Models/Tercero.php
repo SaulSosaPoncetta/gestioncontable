@@ -22,7 +22,7 @@ class Tercero extends Model
     protected $fillable = [
         'empresa_id', 'tipo', 'razon_social', 'tipo_documento', 'nro_documento', 'condicion_iva',
         'domicilio', 'localidad', 'provincia', 'email', 'telefono',
-        'cuenta_id', 'cuenta_imputacion_id', 'observaciones', 'activo',
+        'cuenta_id', 'cuenta_imputacion_id', 'operacion_iva', 'observaciones', 'activo',
     ];
 
     protected $casts = [

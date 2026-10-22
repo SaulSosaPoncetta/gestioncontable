@@ -8,6 +8,9 @@
 @section('actions')
     @if(auth()->user()->puede('operador'))
         <a href="{{ route('comprobantes.create', $circuito) }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>{{ $esVenta ? 'Nueva venta' : 'Nueva compra' }}</a>
+        @if($empresaActiva->tieneModulo('integraciones') || auth()->user()->es_superadmin)
+            <a href="{{ route('importacion.form', ['circuito' => $circuito]) }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-cloud-download me-1"></i>Importar de ARCA</a>
+        @endif
     @endif
 @endsection
 

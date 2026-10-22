@@ -42,6 +42,7 @@ class TerceroRequest extends FormRequest
             'telefono'             => ['nullable', 'string', 'max:50'],
             'cuenta_id'            => ['nullable', $cuentaImputable],
             'cuenta_imputacion_id' => ['nullable', $cuentaImputable],
+            'operacion_iva'        => ['nullable', 'integer', 'between:1,4'],
             'observaciones'        => ['nullable', 'string', 'max:2000'],
             'activo'               => ['boolean'],
         ];

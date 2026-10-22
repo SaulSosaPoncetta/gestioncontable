@@ -117,9 +117,12 @@ class LibroIvaService
 
         $tecnicoAnt = $anterior ? (float) $anterior->saldo_tecnico_favor : (float) ($manual['saldo_tecnico_anterior'] ?? 0);
         $libreAnt = $anterior ? (float) $anterior->saldo_libre_favor : (float) ($manual['saldo_libre_anterior'] ?? 0);
-        $retenciones = (float) ($manual['retenciones'] ?? 0);
+        // Retenciones de IVA sufridas: certificados cargados en el período + lo que se agregue a mano
+        $certificados = round((float) \App\Models\Retencion::where('tipo', 'sufrida')->where('impuesto', 'iva')
+            ->where('periodo', $periodo)->where('estado', 'registrado')->sum('importe'), 2);
+        $retenciones = $certificados + (float) ($manual['retenciones'] ?? 0);
 
-        return ['cerrada' => null, 'anterior' => $anterior]
+        return ['cerrada' => null, 'anterior' => $anterior, 'retenciones_certificados' => $certificados]
             + $this->calcular(round($ventas['iva'], 2), round($compras['iva'], 2), $tecnicoAnt, $libreAnt, round($compras['perc'], 2), $retenciones);
     }
 
@@ -157,7 +160,7 @@ class LibroIvaService
     public function cerrar(string $periodo, array $manual, bool $generarAsiento): IvaPosicion
     {
         $datos = $this->posicion($periodo, $manual);
-        unset($datos['cerrada'], $datos['anterior']);
+        unset($datos['cerrada'], $datos['anterior'], $datos['retenciones_certificados']);
 
         return DB::transaction(function () use ($periodo, $datos, $generarAsiento) {
             $posicion = IvaPosicion::create($datos + ['periodo' => $periodo, 'user_id' => auth()->id()]);

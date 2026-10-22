@@ -66,6 +66,7 @@ class ComprobanteService
                 'cae'                  => $d['cae'] ?? null,
                 'vto_cae'              => $d['vto_cae'] ?? null,
                 'cuenta_imputacion_id' => $d['cuenta_imputacion_id'],
+                'operacion_iva'        => $d['operacion_iva'] ?? 1,
                 'neto_gravado'         => $netoGravado / 100,
                 'no_gravado'           => $c('no_gravado') / 100,
                 'exento'               => $c('exento') / 100,

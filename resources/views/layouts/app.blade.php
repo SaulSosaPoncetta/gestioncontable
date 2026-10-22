@@ -61,6 +61,7 @@
             <li><a href="{{ route('asientos.index') }}" class="nav-link {{ request()->routeIs('asientos.*') ? 'active' : '' }}"><i class="bi bi-journal-text me-2"></i>Asientos</a></li>
             <li><a href="{{ route('libros.diario') }}" class="nav-link {{ request()->routeIs('libros.*') ? 'active' : '' }}"><i class="bi bi-book me-2"></i>Libros y balances</a></li>
             <li><a href="{{ route('estados.situacion') }}" class="nav-link {{ request()->routeIs('estados.*') ? 'active' : '' }}"><i class="bi bi-bar-chart-line me-2"></i>Estados contables</a></li>
+            <li><a href="{{ route('ajuste.index') }}" class="nav-link {{ request()->routeIs('ajuste.*') ? 'active' : '' }}"><i class="bi bi-graph-up-arrow me-2"></i>Ajuste por inflación</a></li>
 
             <li class="nav-section">Operaciones</li>
             @php $conIva = $empresaActiva->tieneModulo('iva') || $usuario->es_superadmin; @endphp
@@ -75,6 +76,12 @@
                 </a>
             </li>
             <li><a href="{{ route('terceros.index') }}" class="nav-link {{ request()->routeIs('terceros.*') ? 'active' : '' }}"><i class="bi bi-person-vcard me-2"></i>Clientes y proveedores</a></li>
+            <li>
+                <a href="{{ route('importacion.form') }}" class="nav-link {{ request()->routeIs('importacion.*') ? 'active' : '' }}">
+                    <i class="bi bi-cloud-download me-2"></i>Importar de ARCA
+                    @unless($empresaActiva->tieneModulo('integraciones') || $usuario->es_superadmin)<i class="bi bi-lock-fill ms-1 small"></i>@endunless
+                </a>
+            </li>
 
             <li class="nav-section">Impuestos</li>
             <li>
@@ -83,8 +90,8 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link disabled"><i class="bi bi-percent me-2"></i>Retenciones / Percep.
-                    @unless($empresaActiva->tieneModulo('retenciones'))<i class="bi bi-lock-fill ms-1 small"></i>@endunless
+                <a href="{{ route('retenciones.index', 'practicada') }}" class="nav-link {{ request()->routeIs('retenciones.*') || request()->routeIs('regimenes.*') ? 'active' : '' }}"><i class="bi bi-percent me-2"></i>Retenciones / Percep.
+                    @unless($empresaActiva->tieneModulo('retenciones') || $usuario->es_superadmin)<i class="bi bi-lock-fill ms-1 small"></i>@endunless
                 </a>
             </li>
 
@@ -92,7 +99,10 @@
             @if($esAdminEmpresa)
                 <li><a href="{{ route('empresa.edit') }}" class="nav-link {{ request()->routeIs('empresa.*') ? 'active' : '' }}"><i class="bi bi-building me-2"></i>Mi empresa</a></li>
             @endif
-            <li><a href="{{ route('ejercicios.index') }}" class="nav-link {{ request()->routeIs('ejercicios.*') ? 'active' : '' }}"><i class="bi bi-calendar-range me-2"></i>Ejercicios</a></li>
+            <li><a href="{{ route('ejercicios.index') }}" class="nav-link {{ request()->routeIs('ejercicios.*', 'cierre.*') ? 'active' : '' }}"><i class="bi bi-calendar-range me-2"></i>Ejercicios</a></li>
+            @if($esAdminEmpresa && ($empresaActiva->tieneModulo('integraciones') || $usuario->es_superadmin))
+                <li><a href="{{ route('integraciones.index') }}" class="nav-link {{ request()->routeIs('integraciones.*') ? 'active' : '' }}"><i class="bi bi-plug me-2"></i>Integraciones</a></li>
+            @endif
             @if($usuario->puede('contador'))
                 <li><a href="{{ route('config.cuentas') }}" class="nav-link {{ request()->routeIs('config.*') ? 'active' : '' }}"><i class="bi bi-gear me-2"></i>Cuentas automáticas</a></li>
             @endif
@@ -106,6 +116,7 @@
             <li class="nav-section">Administración SaaS</li>
             <li><a href="{{ route('admin.suscriptores.index') }}" class="nav-link {{ request()->routeIs('admin.suscriptores.*') ? 'active' : '' }}"><i class="bi bi-buildings me-2"></i>Suscriptores</a></li>
             <li><a href="{{ route('admin.planes.index') }}" class="nav-link {{ request()->routeIs('admin.planes.*') ? 'active' : '' }}"><i class="bi bi-tags me-2"></i>Planes</a></li>
+            <li><a href="{{ route('admin.indices.index') }}" class="nav-link {{ request()->routeIs('admin.indices.*') ? 'active' : '' }}"><i class="bi bi-percent me-2"></i>Índices de inflación</a></li>
         @endif
     </ul>
 </nav>

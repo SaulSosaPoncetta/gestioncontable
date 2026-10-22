@@ -100,10 +100,21 @@ class EjercicioController extends Controller
             ->with('success', 'Ejercicio eliminado.');
     }
 
-    /** Cierre/reapertura administrativa. El cierre contable con asientos de refundición se hace en el paso 13. */
+    /** Bloqueo/reapertura administrativa sin asientos. El cierre contable completo está en CierreEjercicioController. */
     public function cambiarEstado(Request $request, Ejercicio $ejercicio)
     {
         abort_unless($request->user()->puede('administrador'), 403);
+
+        // Si se cerró con asientos de cierre, la reapertura los anula (ver CierreEjercicioController)
+        if (! $ejercicio->estaAbierto() && $ejercicio->tieneCierreContable()) {
+            try {
+                app(\App\Services\CierreEjercicioService::class)->reabrir($ejercicio);
+            } catch (\RuntimeException $e) {
+                return back()->with('error', $e->getMessage());
+            }
+
+            return back()->with('success', "Ejercicio N° {$ejercicio->numero} reabierto: se anularon la refundición, el cierre y la apertura del ejercicio siguiente.");
+        }
 
         $ejercicio->update(['estado' => $ejercicio->estaAbierto() ? 'cerrado' : 'abierto']);
 

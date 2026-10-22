@@ -120,9 +120,9 @@
                         @endunless
 
                         <div class="mb-3">
-                            <label class="form-label small mb-1">Retenciones de IVA sufridas en el período</label>
+                            <label class="form-label small mb-1">Otras retenciones de IVA sufridas (sin certificado cargado)</label>
                             <input type="text" inputmode="decimal" name="retenciones" form="form-recalc" value="{{ $manual['retenciones'] ? $mt($manual['retenciones']) : '' }}" class="form-control form-control-sm text-end">
-                            <div class="form-text">Las practicadas por sus clientes al cobrar (se automatiza en el módulo de retenciones).</div>
+                            <div class="form-text">Los certificados cargados en Retenciones › Sufridas ya se suman solos ($ {{ $mt($p['retenciones_certificados'] ?? 0) }} en este período).</div>
                         </div>
 
                         <input type="hidden" name="periodo" value="{{ $periodo }}" form="form-recalc">

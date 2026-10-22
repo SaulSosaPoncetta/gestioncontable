@@ -8,6 +8,7 @@ use App\Models\Plan;
 use App\Models\User;
 use App\Rules\Cuit;
 use App\Services\AltaEmpresa;
+use App\Services\HubClientes;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -63,14 +64,16 @@ class RegisteredUserController extends Controller
             'password'      => 'contraseña',
         ]);
 
-        $user = DB::transaction(function () use ($request) {
+        $empresa = null;
+
+        $user = DB::transaction(function () use ($request, &$empresa) {
             $user = User::create([
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'password' => $request->password,
             ]);
 
-            AltaEmpresa::crear(
+            $empresa = AltaEmpresa::crear(
                 [
                     'razon_social'   => $request->razon_social,
                     'cuit'           => $request->cuit,
@@ -88,6 +91,9 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
+
+        // Alta en MiGestión Panel (si ya usa GestiónComercial, el hub vincula los dos sistemas solo)
+        dispatch(fn () => app(HubClientes::class)->registrar($empresa, $user->email))->afterResponse();
 
         return redirect()->route('dashboard')->with('success',
             '¡Bienvenido! Su cuenta quedó creada con ' . config('saas.dias_prueba') . ' días de prueba gratis. '

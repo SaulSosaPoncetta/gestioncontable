@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\IndiceInflacionController;
 use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\SuscriptorController;
+use App\Http\Controllers\AjusteInflacionController;
 use App\Http\Controllers\AsientoController;
+use App\Http\Controllers\CierreEjercicioController;
 use App\Http\Controllers\ComprobanteController;
 use App\Http\Controllers\ConfigContableController;
 use App\Http\Controllers\CuentaController;
@@ -12,6 +15,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EjercicioController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\EstadoController;
+use App\Http\Controllers\ExportacionRetencionesController;
+use App\Http\Controllers\RegimenController;
+use App\Http\Controllers\RetencionController;
+use App\Http\Controllers\ExportacionArcaController;
+use App\Http\Controllers\ImportacionArcaController;
+use App\Http\Controllers\IntegracionController;
 use App\Http\Controllers\LibroController;
 use App\Http\Controllers\LibroIvaController;
 use App\Http\Controllers\SuscripcionController;
@@ -81,6 +90,14 @@ Route::middleware(['auth', 'empresa', 'suscripcion'])->group(function () {
     Route::put('/terceros/{tercero}', [TerceroController::class, 'update'])->name('terceros.update');
     Route::delete('/terceros/{tercero}', [TerceroController::class, 'destroy'])->name('terceros.destroy');
 
+    // Importación de «Mis Comprobantes» de ARCA (módulo integraciones)
+    Route::middleware('modulo:integraciones')->prefix('importar/mis-comprobantes')->name('importacion.')->group(function () {
+        Route::get('/', [ImportacionArcaController::class, 'form'])->name('form');
+        Route::post('/', [ImportacionArcaController::class, 'analizar'])->name('analizar');
+        Route::get('/{token}', [ImportacionArcaController::class, 'revisar'])->name('revisar');
+        Route::post('/{token}', [ImportacionArcaController::class, 'confirmar'])->name('confirmar');
+    });
+
     // Comprobantes de venta y compra (módulo IVA)
     Route::middleware('modulo:iva')
         ->prefix('comprobantes/{circuito}')
@@ -102,6 +119,44 @@ Route::middleware(['auth', 'empresa', 'suscripcion'])->group(function () {
         Route::get('/posicion', [LibroIvaController::class, 'posicion'])->name('posicion');
         Route::post('/posicion/cerrar', [LibroIvaController::class, 'cerrar'])->name('cerrar');
         Route::post('/posicion/{posicion}/reabrir', [LibroIvaController::class, 'reabrir'])->name('reabrir');
+        Route::get('/arca', [ExportacionArcaController::class, 'index'])->name('arca');
+        Route::get('/arca/descargar/{archivo}', [ExportacionArcaController::class, 'descargar'])->name('arca.descargar');
+    });
+
+    // Retenciones y percepciones (módulo retenciones)
+    Route::middleware('modulo:retenciones')->group(function () {
+        Route::get('/regimenes', [RegimenController::class, 'index'])->name('regimenes.index');
+        Route::get('/regimenes/crear', [RegimenController::class, 'create'])->name('regimenes.create');
+        Route::post('/regimenes', [RegimenController::class, 'store'])->name('regimenes.store');
+        Route::post('/regimenes/habituales', [RegimenController::class, 'cargarHabituales'])->name('regimenes.habituales');
+        Route::get('/regimenes/{regimen}/editar', [RegimenController::class, 'edit'])->name('regimenes.edit');
+        Route::put('/regimenes/{regimen}', [RegimenController::class, 'update'])->name('regimenes.update');
+
+        Route::get('/retenciones/calcular', [RetencionController::class, 'calcular'])->name('retenciones.calcular');
+        Route::get('/retenciones/exportar', [ExportacionRetencionesController::class, 'index'])->name('retenciones.exportar');
+        Route::get('/retenciones/exportar/sicore', [ExportacionRetencionesController::class, 'sicore'])->name('retenciones.sicore');
+        Route::get('/retenciones/exportar/arba', [ExportacionRetencionesController::class, 'arba'])->name('retenciones.arba');
+        Route::get('/retenciones/exportar/listado', [ExportacionRetencionesController::class, 'listado'])->name('retenciones.listado');
+
+        Route::prefix('retenciones/{tipo}')->whereIn('tipo', ['practicada', 'sufrida'])->name('retenciones.')->group(function () {
+            Route::get('/', [RetencionController::class, 'index'])->name('index');
+            Route::get('/crear', [RetencionController::class, 'create'])->name('create');
+            Route::post('/', [RetencionController::class, 'store'])->name('store');
+            Route::get('/{retencion}', [RetencionController::class, 'show'])->name('show');
+            Route::get('/{retencion}/editar', [RetencionController::class, 'edit'])->name('edit');
+            Route::put('/{retencion}', [RetencionController::class, 'update'])->name('update');
+            Route::post('/{retencion}/anular', [RetencionController::class, 'anular'])->name('anular');
+            Route::get('/{retencion}/certificado', [RetencionController::class, 'certificado'])->name('certificado');
+        });
+    });
+
+    // Integraciones con otros sistemas (módulo integraciones)
+    Route::middleware('modulo:integraciones')->group(function () {
+        Route::get('/configuracion/integraciones', [IntegracionController::class, 'index'])->name('integraciones.index');
+        Route::post('/configuracion/integraciones', [IntegracionController::class, 'store'])->name('integraciones.store');
+        Route::put('/configuracion/integraciones/{integracion}', [IntegracionController::class, 'update'])->name('integraciones.update');
+        Route::post('/configuracion/integraciones/{integracion}/token', [IntegracionController::class, 'regenerar'])->name('integraciones.regenerar');
+        Route::delete('/configuracion/integraciones/{integracion}', [IntegracionController::class, 'destroy'])->name('integraciones.destroy');
     });
 
     // Configuración de cuentas automáticas
@@ -121,6 +176,15 @@ Route::middleware(['auth', 'empresa', 'suscripcion'])->group(function () {
     Route::delete('/ejercicios/{ejercicio}', [EjercicioController::class, 'destroy'])->name('ejercicios.destroy');
     Route::post('/ejercicios/{ejercicio}/estado', [EjercicioController::class, 'cambiarEstado'])->name('ejercicios.estado');
     Route::post('/ejercicios/{ejercicio}/seleccionar', [EjercicioController::class, 'seleccionar'])->name('ejercicios.seleccionar');
+
+    // Cierre contable del ejercicio (refundición, cierre y apertura del siguiente)
+    Route::get('/ejercicios/{ejercicio}/cierre', [CierreEjercicioController::class, 'show'])->name('cierre.show');
+    Route::post('/ejercicios/{ejercicio}/cierre', [CierreEjercicioController::class, 'cerrar'])->name('cierre.cerrar');
+    Route::post('/ejercicios/{ejercicio}/reabrir', [CierreEjercicioController::class, 'reabrir'])->name('cierre.reabrir');
+
+    // Ajuste por inflación (RT 6) del ejercicio en uso
+    Route::get('/ajuste-inflacion', [AjusteInflacionController::class, 'index'])->name('ajuste.index');
+    Route::post('/ajuste-inflacion', [AjusteInflacionController::class, 'generar'])->name('ajuste.generar');
 });
 
 /*
@@ -144,6 +208,12 @@ Route::middleware(['auth', 'empresa', 'superadmin'])->prefix('admin')->name('adm
     Route::post('/planes', [PlanController::class, 'store'])->name('planes.store');
     Route::get('/planes/{plan}/editar', [PlanController::class, 'edit'])->name('planes.edit');
     Route::put('/planes/{plan}', [PlanController::class, 'update'])->name('planes.update');
+
+    // Índices FACPCE para el ajuste por inflación (comunes a todas las empresas)
+    Route::get('/indices-inflacion', [IndiceInflacionController::class, 'index'])->name('indices.index');
+    Route::post('/indices-inflacion', [IndiceInflacionController::class, 'store'])->name('indices.store');
+    Route::post('/indices-inflacion/importar', [IndiceInflacionController::class, 'importar'])->name('indices.importar');
+    Route::delete('/indices-inflacion/{indice}', [IndiceInflacionController::class, 'destroy'])->name('indices.destroy');
 });
 
 require __DIR__.'/auth.php';

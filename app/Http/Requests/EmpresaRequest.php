@@ -42,6 +42,7 @@ class EmpresaRequest extends FormRequest
             'condicion_iva'      => ['required', Rule::in(array_keys(Empresa::CONDICIONES_IVA))],
             'condicion_iibb'     => ['required', Rule::in(array_keys(Empresa::CONDICIONES_IIBB))],
             'nro_iibb'           => ['nullable', 'string', 'max:20'],
+            'actividad_afip'     => ['nullable', 'digits:6'],
             'inicio_actividades' => ['nullable', 'date'],
             'domicilio'          => ['nullable', 'string', 'max:255'],
             'localidad'          => ['nullable', 'string', 'max:100'],

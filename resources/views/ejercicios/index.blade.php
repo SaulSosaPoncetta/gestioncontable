@@ -40,6 +40,9 @@
                             <span class="badge text-bg-success">Abierto</span>
                         @else
                             <span class="badge text-bg-secondary">Cerrado</span>
+                            @if($ej->cerrado_at)
+                                <div class="small text-muted">con asientos de cierre · {{ $ej->cerrado_at->format('d/m/Y') }}</div>
+                            @endif
                         @endif
                     </td>
                     <td class="text-end text-nowrap">
@@ -52,13 +55,16 @@
 
                         @if(auth()->user()->puede('contador'))
                             <a href="{{ route('ejercicios.edit', $ej) }}" class="btn btn-sm btn-outline-secondary" title="Editar"><i class="bi bi-pencil"></i></a>
+                            @if($ej->estaAbierto())
+                                <a href="{{ route('cierre.show', $ej) }}" class="btn btn-sm btn-outline-dark" title="Cierre contable (refundición, cierre y apertura)"><i class="bi bi-journal-check"></i></a>
+                            @endif
                         @endif
 
                         @if(auth()->user()->puede('administrador'))
                             <form method="POST" action="{{ route('ejercicios.estado', $ej) }}" class="d-inline"
-                                  data-confirm="{{ $ej->estaAbierto() ? '¿Cerrar el ejercicio? No se podrán registrar nuevos asientos.' : '¿Reabrir el ejercicio?' }}">
+                                  data-confirm="{{ $ej->estaAbierto() ? '¿Bloquear el ejercicio sin asientos de cierre? No se podrán registrar nuevos asientos. (Para el cierre contable use el botón de cierre.)' : ($ej->cerrado_at ? '¿Reabrir el ejercicio? Se anulan la refundición, el cierre y la apertura del ejercicio siguiente.' : '¿Reabrir el ejercicio?') }}">
                                 @csrf
-                                <button class="btn btn-sm btn-outline-{{ $ej->estaAbierto() ? 'warning' : 'success' }}" title="{{ $ej->estaAbierto() ? 'Cerrar' : 'Reabrir' }}">
+                                <button class="btn btn-sm btn-outline-{{ $ej->estaAbierto() ? 'warning' : 'success' }}" title="{{ $ej->estaAbierto() ? 'Bloquear sin asientos de cierre' : 'Reabrir' }}">
                                     <i class="bi bi-{{ $ej->estaAbierto() ? 'lock' : 'unlock' }}"></i>
                                 </button>
                             </form>

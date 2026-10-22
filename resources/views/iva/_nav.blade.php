@@ -13,6 +13,10 @@
             <a class="nav-link {{ request()->routeIs('iva.posicion') ? 'active' : '' }}"
                href="{{ route('iva.posicion', ['periodo' => $periodo]) }}"><i class="bi bi-calculator me-1"></i>Posición mensual</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('iva.arca') ? 'active' : '' }}"
+               href="{{ route('iva.arca', ['periodo' => $periodo]) }}"><i class="bi bi-cloud-upload me-1"></i>Exportar a ARCA</a>
+        </li>
     </ul>
 
     <div class="d-flex gap-2 align-items-end">

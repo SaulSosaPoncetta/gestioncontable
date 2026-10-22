@@ -12,13 +12,14 @@ class Ejercicio extends Model
 
     protected $fillable = [
         'empresa_id', 'numero', 'descripcion', 'fecha_inicio', 'fecha_cierre',
-        'estado', 'bloqueado_hasta',
+        'estado', 'bloqueado_hasta', 'cerrado_at', 'cerrado_por',
     ];
 
     protected $casts = [
         'fecha_inicio'    => 'date',
         'fecha_cierre'    => 'date',
         'bloqueado_hasta' => 'date',
+        'cerrado_at'      => 'datetime',
     ];
 
     public function estaAbierto(): bool
@@ -41,6 +42,21 @@ class Ejercicio extends Model
             return false;
         }
         return true;
+    }
+
+    /** Ejercicio inmediato siguiente (empieza el día después del cierre). */
+    public function siguiente(): ?self
+    {
+        return static::whereDate('fecha_inicio', $this->fecha_cierre->copy()->addDay()->toDateString())->first();
+    }
+
+    /** ¿Se cerró con asientos de refundición y cierre (no solo bloqueado)? */
+    public function tieneCierreContable(): bool
+    {
+        return Asiento::where('ejercicio_id', $this->id)
+            ->where('origen', 'cierre_ejercicio')
+            ->where('estado', 'registrado')
+            ->exists();
     }
 
     public function getNombreAttribute(): string

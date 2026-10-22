@@ -36,7 +36,7 @@ class Empresa extends Model
 
     protected $fillable = [
         'razon_social', 'nombre_fantasia', 'cuit', 'condicion_iva', 'condicion_iibb',
-        'nro_iibb', 'inicio_actividades', 'domicilio', 'localidad', 'provincia',
+        'nro_iibb', 'actividad_afip', 'inicio_actividades', 'domicilio', 'localidad', 'provincia',
         'codigo_postal', 'email', 'telefono', 'mes_cierre',
         'agente_retencion_iva', 'agente_retencion_ganancias', 'agente_recaudacion_iibb',
         'activa',

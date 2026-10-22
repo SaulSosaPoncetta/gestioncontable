@@ -60,6 +60,13 @@
             <label class="form-label">N° de inscripción IIBB</label>
             <input type="text" name="nro_iibb" value="{{ old('nro_iibb', $empresa->nro_iibb) }}" class="form-control">
         </div>
+        <div class="col-md-4">
+            <label class="form-label">Código de actividad ARCA</label>
+            <input type="text" name="actividad_afip" value="{{ old('actividad_afip', $empresa->actividad_afip) }}" maxlength="6" placeholder="Ej: 620100"
+                   class="form-control @error('actividad_afip') is-invalid @enderror">
+            <div class="form-text">Actividad principal (6 dígitos, F.883). Se usa en la exportación de IVA Simple.</div>
+            @error('actividad_afip')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
         <div class="col-12">
             <label class="form-label d-block">Agente de retención / percepción</label>
             <div class="form-check form-check-inline">

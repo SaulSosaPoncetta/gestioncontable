@@ -14,7 +14,7 @@ class Comprobante extends Model
 
     protected $fillable = [
         'empresa_id', 'ejercicio_id', 'circuito', 'tercero_id', 'tipo_comprobante', 'punto_venta', 'numero',
-        'fecha', 'periodo_iva', 'cae', 'vto_cae', 'cuenta_imputacion_id',
+        'fecha', 'periodo_iva', 'cae', 'vto_cae', 'cuenta_imputacion_id', 'operacion_iva',
         'neto_gravado', 'no_gravado', 'exento', 'iva', 'percepcion_iva', 'percepcion_iibb', 'otros_tributos', 'total',
         'asiento_id', 'estado', 'observaciones', 'user_id',
     ];

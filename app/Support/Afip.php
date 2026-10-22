@@ -66,6 +66,30 @@ class Afip
         99 => 'Sin identificar (Consumidor Final)',
     ];
 
+    /** IVA Simple – tipo de operación de las ventas */
+    public const OPERACIONES_VENTA = [
+        1 => 'Cosas muebles, obras, locaciones y servicios',
+        2 => 'Venta de bienes de uso',
+    ];
+
+    /** IVA Simple – concepto de las compras (crédito fiscal) */
+    public const CONCEPTOS_COMPRA = [
+        1 => 'Compra de bienes (excepto bienes de uso)',
+        2 => 'Locaciones',
+        3 => 'Prestaciones de servicios',
+        4 => 'Inversiones en bienes de uso',
+    ];
+
+    /** IVA Simple – tipo de sujeto comprador: 1 RI · 2 Monotributo · 3 CF, exento y no alcanzado */
+    public static function tipoSujeto(int $condicionIva): int
+    {
+        return match ($condicionIva) {
+            1       => 1,
+            6, 13   => 2,
+            default => 3,
+        };
+    }
+
     public static function abreviatura(int $tipo): string
     {
         return self::TIPOS_COMPROBANTE[$tipo][0] ?? (string) $tipo;
